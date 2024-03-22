@@ -7,6 +7,7 @@ const { handleRequest } = createYoga({
   schema: createSchema({
     typeDefs: typeDefs,
     resolvers: resolvers,
+    
   }),
   // While using Next.js file convention for routing, we need to configure Yoga to use the correct endpoint
   graphqlEndpoint: "/api/graphql",

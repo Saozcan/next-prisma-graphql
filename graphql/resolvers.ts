@@ -1,34 +1,27 @@
-import { $Enums, PrismaClient } from "@prisma/client";
-import { PrismaClient as PrismaClientSecond } from "@internal/prisma-second/client";
-
-const prisma = new PrismaClient({
-  log: ["query"],
-});
-const prismaSecond = new PrismaClientSecond({
-  log: ["query"],
-});
+import { prisma_1 } from "../prisma/db";
+import { prisma_2 } from "../prisma-second/db";
+import { ROLES } from "@prisma/client";
 
 export const resolvers = {
   Query: {
     users: () => {
-      return prisma.user.findMany();
+      return prisma_1.user.findMany();
     },
     user: (_: any, args: { data: { id: string } }) => {
-      return prisma.user.findMany({
+      return prisma_1.user.findMany({
         where: {
           id: args.data.id,
         },
       });
     },
     usersSecondDb: () => {
-      return prismaSecond.user.findMany();
+      return prisma_2.user.findMany();
     },
-    // Post User relation query
   },
+
   Post: {
     author: (parent: any) => {
-      console.log("parent", parent);
-      return prismaSecond.user.findUnique({
+      return prisma_2.user.findUnique({
         where: {
           id: parent.authorId,
         },
@@ -38,7 +31,7 @@ export const resolvers = {
 
   Mutation: {
     createUser: (_: any, args: any, _request: Request, _k: any) => {
-      return prisma.user.create({
+      return prisma_1.user.create({
         data: {
           name: args.data.name,
           email: args.data.email,
@@ -52,13 +45,13 @@ export const resolvers = {
         data: {
           name: string;
           email: string;
-          role: $Enums.ROLES;
+          role: ROLES;
         };
       },
       _request: Request,
       _k: any
     ) => {
-      return prismaSecond.user.create({
+      return prisma_2.user.create({
         data: {
           name: args.data.name,
           email: args.data.email,
@@ -79,7 +72,7 @@ export const resolvers = {
       _request: Request,
       _k: any
     ) => {
-      return prismaSecond.post.create({
+      return prisma_2.post.create({
         data: {
           title: args.data.title,
           content: args.data.content,
